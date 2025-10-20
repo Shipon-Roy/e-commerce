@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import Container from "@/components/Container";
 import dbConnect from "../../../lib/dbConnect";
 import Product from "../../../lib/models/Product";
