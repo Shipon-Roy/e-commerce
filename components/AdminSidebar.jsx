@@ -25,7 +25,7 @@ export default function AdminSidebar() {
   ];
 
   return (
-    <ProtectedRoute role="admin">
+    <ProtectedRoute>
       <aside className="w-64 bg-gray-900 border-r border-gray-800 text-gray-200 p-5 flex flex-col justify-between h-screen">
         <div>
           <h2 className="text-2xl font-bold mb-8 text-white">⚙️ Admin Panel</h2>
