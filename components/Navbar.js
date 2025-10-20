@@ -8,8 +8,6 @@ export default function Navbar() {
   const { cart } = useCart();
   const { user, logout, loading } = useAuth();
 
-  console.log("Auth user:", user); // debug only
-
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   if (loading) return null; // data লোড না হওয়া পর্যন্ত কিছু না দেখাও

@@ -6,7 +6,6 @@ export async function POST(req) {
   try {
     await dbConnect();
     const body = await req.json();
-    console.log("Received body:", body); // check address
 
     const newOrder = new Order({
       customer: {

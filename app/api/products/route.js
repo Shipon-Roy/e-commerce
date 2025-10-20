@@ -54,7 +54,5 @@ export async function POST(req) {
     image: body.image || "",
   });
 
-  console.log("Saved Product:", product);
-
   return new Response(JSON.stringify(product), { status: 201 });
 }
