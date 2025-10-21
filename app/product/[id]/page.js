@@ -6,10 +6,12 @@ import Product from "../../../lib/models/Product";
 import AddToCartButton from "@/components/AddToCartButton";
 
 export default async function ProductPage({ params }) {
+  const { id } = await params;
+
   await dbConnect();
 
   // Fetch main product
-  let product = await Product.findById(params.id).lean();
+  let product = await Product.findById(id).lean();
   if (!product) return <div>Product not found</div>;
 
   product = { ...product, _id: product._id.toString() };
@@ -30,7 +32,7 @@ export default async function ProductPage({ params }) {
   return (
     <div>
       <Container>
-        <div className="  mx-auto bg-gray-800 rounded shadow my-10 p-6">
+        <div className="mx-auto bg-gray-800 rounded shadow my-10 p-6">
           <div className="flex flex-col md:flex-row gap-6">
             <div className="md:w-1/2">
               <img
