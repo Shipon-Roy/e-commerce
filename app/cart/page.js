@@ -84,11 +84,13 @@ export default function CartPage() {
 
   return (
     <Container>
-      <div className="mx-auto bg-gray-800 rounded shadow p-6 my-20">
-        <h1 className="text-3xl font-bold mb-4 text-white">Your Cart</h1>
+      <div className="min-h-screen bg-gray-800 rounded shadow p-6 my-20">
+        <h1 className="text-3xl font-bold mb-4 text-white text-center">
+          Your Order
+        </h1>
 
         {cart.length === 0 ? (
-          <p className="text-white">Your cart is empty.</p>
+          <p className="text-white text-center">Your cart is empty.</p>
         ) : (
           <>
             {cart.map((item) => (
