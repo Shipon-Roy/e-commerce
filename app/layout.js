@@ -11,7 +11,7 @@ export default function RootLayout({ children }) {
         <AuthProvider>
           <CartProvider>
             <Navbar />
-            {children}
+            <div className="bg-gray-900">{children}</div>
             <Footer />
           </CartProvider>
         </AuthProvider>

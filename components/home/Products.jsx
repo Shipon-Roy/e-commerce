@@ -11,7 +11,6 @@ export default function Products() {
     inStock: "",
   });
 
-  // 🧠 Fetch products with filters
   const fetchProducts = async () => {
     const params = new URLSearchParams(filters);
     const res = await fetch(`/api/products?${params.toString()}`);
@@ -26,10 +25,9 @@ export default function Products() {
   return (
     <div className="my-20 text-white">
       <Container>
-        {/* 🧭 Layout: Sidebar + Products */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {/* 🧭 Left Sidebar Filters */}
-          <div className="bg-gray-900 p-5 rounded-lg h-fit md:sticky md:top-24">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          {/* 🧭 Sidebar Filters (only sticky on large screens) */}
+          <div className="bg-gray-900 p-5 rounded-lg h-fit lg:sticky lg:top-24">
             <h2 className="text-xl font-semibold mb-4">Filters</h2>
 
             {/* Category Filter */}
@@ -98,9 +96,11 @@ export default function Products() {
             </button>
           </div>
 
-          {/* 🛒 Right Products Grid */}
-          <div className="md:col-span-3">
-            <h1 className="text-3xl font-bold mb-10 ">Products</h1>
+          {/* 🛒 Product Grid */}
+          <div className="lg:col-span-3">
+            <h1 className="text-3xl font-bold mb-10 text-center lg:text-left">
+              Products
+            </h1>
             {products.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {products.map((p) => (

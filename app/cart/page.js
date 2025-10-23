@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useCart } from "@/context/CartContext";
 import Container from "@/components/Container";
 
@@ -25,11 +25,9 @@ export default function CartPage() {
 
   const total = cart.reduce((sum, i) => sum + i.product.price * i.quantity, 0);
 
-  // Fetch related products
   useEffect(() => {
     const fetchRelated = async () => {
       if (cart.length === 0) return;
-
       const category = cart[0].product.category;
       if (!category) return;
 
@@ -84,8 +82,8 @@ export default function CartPage() {
 
   return (
     <Container>
-      <div className="min-h-screen bg-gray-800 rounded shadow p-6 my-20">
-        <h1 className="text-3xl font-bold mb-4 text-white text-center">
+      <div className="min-h-screen bg-gray-800 rounded shadow p-4 md:p-6 my-10">
+        <h1 className="text-3xl font-bold mb-6 text-white text-center">
           Your Order
         </h1>
 
@@ -96,15 +94,15 @@ export default function CartPage() {
             {cart.map((item) => (
               <div
                 key={item.product._id}
-                className="flex items-center justify-between border-b pb-3 mb-3 text-white"
+                className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b pb-3 mb-3 text-white gap-3"
               >
-                <div>
+                <div className="flex-1">
                   <h3 className="font-semibold">{item.product.name}</h3>
                   <p className="text-sm text-gray-400">
                     ${item.product.price} × {item.quantity}
                   </p>
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
                   <div className="flex items-center border rounded">
                     <button
                       onClick={() => decreaseQuantity(item.product._id)}
@@ -139,24 +137,27 @@ export default function CartPage() {
 
             <button
               onClick={() => setShowModal(true)}
-              className="mt-4 bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
+              className="mt-4 w-full md:w-auto bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
             >
               Proceed to Checkout
             </button>
 
-            {/* Modal */}
             {showModal && (
-              <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
-                <div className="bg-gray-800 rounded p-6 w-full max-w-xl relative">
+              <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50 p-4">
+                <div className="bg-gray-800 rounded p-4 sm:p-6 w-full max-w-md relative max-h-[90vh] overflow-y-auto">
+                  {/* Close Button */}
                   <button
                     onClick={() => setShowModal(false)}
-                    className="absolute top-2 right-2 text-white font-bold"
+                    className="absolute top-3 right-3 text-white font-bold text-xl sm:text-2xl p-2 rounded hover:bg-gray-700 transition"
+                    aria-label="Close"
                   >
-                    X
+                    ×
                   </button>
-                  <h2 className="text-xl font-bold mb-4 text-white">
+
+                  <h2 className="text-xl font-bold mb-4 text-white text-center sm:text-left">
                     Customer Details
                   </h2>
+
                   <form
                     onSubmit={handleOrderConfirm}
                     className="space-y-3 text-white"
@@ -168,7 +169,7 @@ export default function CartPage() {
                       onChange={(e) =>
                         setForm({ ...form, name: e.target.value })
                       }
-                      className="w-full border p-2 rounded bg-gray-700"
+                      className="w-full border p-3 rounded bg-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500"
                       required
                     />
                     <input
@@ -178,7 +179,7 @@ export default function CartPage() {
                       onChange={(e) =>
                         setForm({ ...form, email: e.target.value })
                       }
-                      className="w-full border p-2 rounded bg-gray-700"
+                      className="w-full border p-3 rounded bg-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500"
                       required
                     />
                     <textarea
@@ -187,7 +188,7 @@ export default function CartPage() {
                       onChange={(e) =>
                         setForm({ ...form, address: e.target.value })
                       }
-                      className="w-full border p-2 rounded bg-gray-700"
+                      className="w-full border p-3 rounded bg-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500"
                       required
                     />
                     <select
@@ -195,14 +196,15 @@ export default function CartPage() {
                       onChange={(e) =>
                         setForm({ ...form, paymentMethod: e.target.value })
                       }
-                      className="w-full border p-2 rounded bg-gray-700"
+                      className="w-full border p-3 rounded bg-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500"
                     >
                       <option value="COD">Cash on Delivery</option>
                       <option value="Online">Online Payment</option>
                     </select>
+
                     <button
                       type="submit"
-                      className="w-full bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700"
+                      className="w-full bg-green-600 text-white px-6 py-3 rounded hover:bg-green-700 transition"
                     >
                       Confirm Order
                     </button>
