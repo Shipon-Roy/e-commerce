@@ -9,10 +9,11 @@ export default function AdminProducts() {
     name: "",
     price: "",
     category: "",
-    image: "",
     description: "",
   });
+  const [images, setImages] = useState([]);
   const [editing, setEditing] = useState(null);
+  const [showModal, setShowModal] = useState(false);
 
   // Fetch products
   const fetchProducts = async () => {
@@ -28,25 +29,31 @@ export default function AdminProducts() {
   // Add / Update
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const method = editing ? "PUT" : "POST";
+
+    const formData = new FormData();
+    formData.append("name", form.name);
+    formData.append("price", form.price);
+    formData.append("category", form.category);
+    formData.append("description", form.description);
+
+    images.forEach((img) => formData.append("images", img));
+
     const url = editing
       ? `/api/admin/products/${editing}`
       : "/api/admin/products";
+    const method = editing ? "PUT" : "POST";
 
     await fetch(url, {
       method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
+      body: method === "POST" ? formData : JSON.stringify(form),
+      headers:
+        method === "PUT" ? { "Content-Type": "application/json" } : undefined,
     });
 
-    setForm({
-      name: "",
-      price: "",
-      category: "",
-      image: "",
-      description: "",
-    });
+    setForm({ name: "", price: "", category: "", description: "" });
+    setImages([]);
     setEditing(null);
+    setShowModal(false);
     fetchProducts();
   };
 
@@ -64,9 +71,9 @@ export default function AdminProducts() {
       name: p.name || "",
       price: p.price?.toString() || "",
       category: p.category || "",
-      image: p.image || "",
       description: p.description || "",
     });
+    setShowModal(true);
   };
 
   // Toggle stock
@@ -89,13 +96,9 @@ export default function AdminProducts() {
           <button
             onClick={() => {
               setEditing(null);
-              setForm({
-                name: "",
-                price: "",
-                category: "",
-                image: "",
-                description: "",
-              });
+              setForm({ name: "", price: "", category: "", description: "" });
+              setImages([]);
+              setShowModal(true);
             }}
             className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
           >
@@ -103,61 +106,79 @@ export default function AdminProducts() {
           </button>
         </div>
 
-        {/* Form */}
-        <div className="bg-gray-900 p-6 rounded-xl mb-10 shadow">
-          <form onSubmit={handleSubmit} className="grid md:grid-cols-2 gap-4">
-            <input
-              type="text"
-              placeholder="Product Name"
-              value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
-              className="w-full p-2 rounded text-gray-200"
-              required
-            />
-            <input
-              type="number"
-              placeholder="Price"
-              value={form.price}
-              onChange={(e) => setForm({ ...form, price: e.target.value })}
-              className="w-full p-2 rounded text-gray-200"
-              required
-            />
-            <input
-              type="text"
-              placeholder="Category"
-              value={form.category}
-              onChange={(e) => setForm({ ...form, category: e.target.value })}
-              className="w-full p-2 rounded text-gray-200"
-              required
-            />
-            <input
-              type="text"
-              placeholder="Image URL"
-              value={form.image}
-              onChange={(e) => setForm({ ...form, image: e.target.value })}
-              className="w-full p-2 rounded text-gray-200"
-            />
-            <textarea
-              placeholder="Description"
-              value={form.description}
-              onChange={(e) =>
-                setForm({ ...form, description: e.target.value })
-              }
-              className="w-full p-2 rounded text-gray-200 md:col-span-2"
-              required
-            />
-            <button className="bg-blue-600 w-36 text-white px-4 py-2 rounded hover:bg-blue-700 md:col-span-2">
-              {editing ? "Update Product" : "Add Product"}
-            </button>
-          </form>
-        </div>
+        {/* Modal */}
+        {showModal && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="bg-gray-900 p-6 rounded-lg w-full max-w-2xl relative">
+              <button
+                className="absolute top-2 right-2 text-white text-xl font-bold"
+                onClick={() => setShowModal(false)}
+              >
+                &times;
+              </button>
+              <h2 className="text-2xl font-bold mb-4">
+                {editing ? "Edit Product" : "Add Product"}
+              </h2>
+              <form
+                onSubmit={handleSubmit}
+                className="grid md:grid-cols-2 gap-4"
+              >
+                <input
+                  type="text"
+                  placeholder="Product Name"
+                  value={form.name}
+                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                  className="w-full p-2 rounded text-gray-200"
+                  required
+                />
+                <input
+                  type="number"
+                  placeholder="Price"
+                  value={form.price}
+                  onChange={(e) => setForm({ ...form, price: e.target.value })}
+                  className="w-full p-2 rounded text-gray-200"
+                  required
+                />
+                <input
+                  type="text"
+                  placeholder="Category"
+                  value={form.category}
+                  onChange={(e) =>
+                    setForm({ ...form, category: e.target.value })
+                  }
+                  className="w-full p-2 rounded text-gray-200"
+                  required
+                />
+                <input
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  onChange={(e) => setImages([...e.target.files])}
+                  className="w-full text-gray-200"
+                />
+                <textarea
+                  placeholder="Description"
+                  value={form.description}
+                  onChange={(e) =>
+                    setForm({ ...form, description: e.target.value })
+                  }
+                  className="w-full p-2 rounded text-gray-200 md:col-span-2"
+                  required
+                />
+                <button className="bg-blue-600 w-full text-white px-4 py-2 rounded md:col-span-2">
+                  {editing ? "Update Product" : "Add Product"}
+                </button>
+              </form>
+            </div>
+          </div>
+        )}
 
         {/* Product List */}
-        <div className="bg-gray-800 rounded-lg shadow overflow-x-auto">
+        <div className="bg-gray-800 rounded-lg shadow overflow-x-auto mt-6">
           <table className="min-w-full text-left text-sm">
             <thead className="bg-gray-700 uppercase text-gray-300 text-xs">
               <tr>
-                <th className="px-4 py-3">Image</th>
+                <th className="px-4 py-3">Images</th>
                 <th className="px-4 py-3">Name</th>
                 <th className="px-4 py-3">Price</th>
                 <th className="px-4 py-3">Description</th>
@@ -181,20 +202,19 @@ export default function AdminProducts() {
                     key={p._id}
                     className="border-b border-gray-700 hover:bg-gray-700/50 transition"
                   >
-                    <td className="px-4 py-3">
-                      {p.image ? (
+                    <td className="px-4 py-3 flex gap-1">
+                      {p.images?.map((img, idx) => (
                         <Image
-                          src={p.image}
+                          key={idx}
+                          src={`data:${img.contentType};base64,${Buffer.from(
+                            img.data.data
+                          ).toString("base64")}`}
                           alt={p.name}
-                          width={60}
-                          height={60}
+                          width={50}
+                          height={50}
                           className="rounded object-cover"
                         />
-                      ) : (
-                        <div className="w-[60px] h-[60px] bg-gray-600 rounded flex items-center justify-center text-xs text-gray-300">
-                          No Img
-                        </div>
-                      )}
+                      ))}
                     </td>
                     <td className="px-4 py-3">{p.name}</td>
                     <td className="px-4 py-3">${p.price}</td>

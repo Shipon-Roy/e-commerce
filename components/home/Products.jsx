@@ -10,12 +10,20 @@ export default function Products() {
     price: "",
     inStock: "",
   });
+  const [loading, setLoading] = useState(false); // loader state
 
   const fetchProducts = async () => {
+    setLoading(true);
     const params = new URLSearchParams(filters);
-    const res = await fetch(`/api/products?${params.toString()}`);
-    const data = await res.json();
-    setProducts(data);
+    try {
+      const res = await fetch(`/api/products?${params.toString()}`);
+      const data = await res.json();
+      setProducts(data);
+    } catch (err) {
+      console.error("Failed to fetch products:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -26,7 +34,7 @@ export default function Products() {
     <div className="my-20 text-white">
       <Container>
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          {/* 🧭 Sidebar Filters (only sticky on large screens) */}
+          {/* 🧭 Sidebar Filters */}
           <div className="bg-gray-900 p-5 rounded-lg h-fit lg:sticky lg:top-24">
             <h2 className="text-xl font-semibold mb-4">Filters</h2>
 
@@ -101,7 +109,13 @@ export default function Products() {
             <h1 className="text-3xl font-bold mb-10 text-center lg:text-left">
               Products
             </h1>
-            {products.length > 0 ? (
+
+            {loading ? (
+              // Loader
+              <div className="flex justify-center items-center py-20">
+                <div className="w-16 h-16 border-4 border-blue-600 border-dashed rounded-full animate-spin"></div>
+              </div>
+            ) : products.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {products.map((p) => (
                   <ProductCard key={p._id} product={p} />

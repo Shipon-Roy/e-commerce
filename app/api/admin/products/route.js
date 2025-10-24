@@ -1,5 +1,5 @@
-import dbConnect from "../../../../lib/dbConnect";
-import Product from "../../../../lib/models/Product";
+import dbConnect from "@/lib/dbConnect";
+import Product from "@/lib/models/Product";
 
 // GET all products
 export async function GET() {
@@ -8,19 +8,39 @@ export async function GET() {
   return new Response(JSON.stringify(products), { status: 200 });
 }
 
-// POST new product
+// POST new product with multiple images
 export async function POST(req) {
   await dbConnect();
-  const body = await req.json();
 
-  if (!body.name || !body.price || !body.category) {
+  const formData = await req.formData();
+  const name = formData.get("name");
+  const price = Number(formData.get("price"));
+  const category = formData.get("category");
+  const description = formData.get("description");
+
+  if (!name || !price || !category) {
     return new Response(
       JSON.stringify({ error: "Name, Price & Category required" }),
       { status: 400 }
     );
   }
 
-  body.price = Number(body.price); // ensure number
-  const product = await Product.create(body);
+  const images = [];
+  for (const file of formData.getAll("images")) {
+    const arrayBuffer = await file.arrayBuffer();
+    images.push({
+      data: Buffer.from(arrayBuffer),
+      contentType: file.type,
+    });
+  }
+
+  const product = await Product.create({
+    name,
+    price,
+    category,
+    description,
+    images,
+  });
+
   return new Response(JSON.stringify(product), { status: 201 });
 }

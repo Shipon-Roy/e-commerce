@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useCart } from "@/context/CartContext";
 import Container from "@/components/Container";
+import OrderSuccess from "../order-success/page";
 
 export default function CartPage() {
   const {
@@ -68,16 +69,7 @@ export default function CartPage() {
   };
 
   if (orderPlaced) {
-    return (
-      <Container>
-        <div className="max-w-xl mx-auto bg-gray-800 p-6 rounded shadow text-white text-center">
-          <h1 className="text-2xl font-bold text-green-400 mb-4">
-            ✅ Order Confirmed!
-          </h1>
-          <p>Your order has been placed successfully.</p>
-        </div>
-      </Container>
-    );
+    return <OrderSuccess />;
   }
 
   return (

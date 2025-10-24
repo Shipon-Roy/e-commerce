@@ -1,105 +1,81 @@
+import dbConnect from "@/lib/dbConnect";
+import Product from "@/lib/models/Product";
+import ProductPageClient from "./ProductPageClient";
+
 export const dynamic = "force-dynamic";
 
-import Container from "@/components/Container";
-import dbConnect from "../../../lib/dbConnect";
-import Product from "../../../lib/models/Product";
-import AddToCartButton from "@/components/AddToCartButton";
+// ✅ Properly handle MongoDB Binary field (Buffer)
+function serializeImages(images) {
+  if (!images || images.length === 0) return [];
+
+  return images.map((img) => {
+    let base64Data = "";
+
+    try {
+      if (img?.data?.$binary?.base64) {
+        // BSON Binary
+        base64Data = img.data.$binary.base64;
+      } else if (
+        img?.data?.type === "Buffer" &&
+        Array.isArray(img?.data?.data)
+      ) {
+        // Mongoose Buffer (after lean)
+        base64Data = Buffer.from(img.data.data).toString("base64");
+      } else if (Buffer.isBuffer(img?.data)) {
+        // Direct Buffer (no lean)
+        base64Data = img.data.toString("base64");
+      } else if (Array.isArray(img?.data)) {
+        // Raw byte array
+        base64Data = Buffer.from(img.data).toString("base64");
+      } else if (typeof img?.data === "string") {
+        // Already base64
+        base64Data = img.data;
+      }
+    } catch (err) {
+      console.error("❌ serializeImages error:", err, img);
+    }
+
+    return {
+      contentType: img.contentType || "image/jpeg",
+      data: base64Data || "",
+    };
+  });
+}
 
 export default async function ProductPage({ params }) {
-  const { id } = await params;
-
+  const { id } = await params; // ✅ Next.js 15 syntax
   await dbConnect();
 
-  // Fetch main product
-  let product = await Product.findById(id).lean();
-  if (!product) return <div>Product not found</div>;
+  // ✅ Fetch product (without .lean() so Buffer stays intact)
+  const productData = await Product.findById(id);
+  if (!productData) {
+    return (
+      <div className="text-center text-white py-20 text-xl">
+        ❌ Product not found
+      </div>
+    );
+  }
 
-  product = { ...product, _id: product._id.toString() };
+  // ✅ Convert properly for client
+  const product = {
+    ...productData.toObject(),
+    _id: productData._id.toString(),
+    images: serializeImages(productData.images),
+  };
 
-  // Fetch related products (same category, exclude current product)
+  // ✅ Fetch related products
   const relatedProductsData = await Product.find({
     category: product.category,
     _id: { $ne: product._id },
-  })
-    .limit(4)
-    .lean();
+  }).limit(4);
 
   const relatedProducts = relatedProductsData.map((p) => ({
-    ...p,
+    ...p.toObject(),
     _id: p._id.toString(),
+    images: serializeImages(p.images),
   }));
 
   return (
-    <div>
-      <Container>
-        <div className="mx-auto bg-gray-800 rounded shadow my-10 p-6">
-          <div className="flex flex-col md:flex-row gap-6">
-            <div className="md:w-1/2">
-              <img
-                src={product.image || "/no-image.png"}
-                alt={product.name}
-                className="w-full h-80 md:h-auto object-cover rounded mb-4"
-              />
-            </div>
-            <div className="md:w-1/2">
-              <h1 className="text-3xl font-bold mb-2">{product.name}</h1>
-              <p className="text-gray-200 mb-4">{product.description}</p>
-              <p className="text-xl font-semibold mb-4">${product.price}</p>
-              {product.inStock ? (
-                <AddToCartButton product={product} />
-              ) : (
-                <button
-                  disabled
-                  className="bg-gray-500 text-white px-4 py-2 rounded opacity-70 cursor-not-allowed"
-                >
-                  Out of Stock
-                </button>
-              )}
-            </div>
-          </div>
-
-          {/* Related Products */}
-          {relatedProducts.length > 0 && (
-            <div className="mt-10">
-              <h2 className="text-2xl font-bold mb-4 text-white">
-                You Might Also Like
-              </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                {relatedProducts.map((p) => (
-                  <div
-                    key={p._id}
-                    className="bg-gray-700 p-4 rounded text-white"
-                  >
-                    {p.image ? (
-                      <img
-                        src={p.image}
-                        alt={p.name}
-                        className="w-full h-40 object-cover rounded mb-2"
-                      />
-                    ) : (
-                      <div className="w-full h-40 bg-gray-600 rounded mb-2 flex items-center justify-center">
-                        No Image
-                      </div>
-                    )}
-                    <h3 className="font-semibold">{p.name}</h3>
-                    <p>${p.price}</p>
-                    {p.inStock ? (
-                      <AddToCartButton product={p} />
-                    ) : (
-                      <button
-                        disabled
-                        className="bg-gray-500 text-white px-4 py-1 rounded opacity-70 cursor-not-allowed mt-2 w-full"
-                      >
-                        Out of Stock
-                      </button>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-      </Container>
-    </div>
+    <ProductPageClient product={product} relatedProducts={relatedProducts} />
   );
 }

@@ -3,57 +3,76 @@ import Link from "next/link";
 
 export default function ProductCard({ product }) {
   const isOutOfStock = product.inStock === false;
-  return (
-    <div className="bg-gray-700 rounded shadow p-4 relative">
-      <div className="h-48 flex items-center justify-center mb-4">
-        {product.image ? (
-          // eslint-disable-next-line @next/next/no-img-element
 
+  // প্রথম image Base64
+  const firstImage =
+    product.images && product.images.length > 0
+      ? `data:${product.images[0].contentType};base64,${Buffer.from(
+          product.images[0].data.data
+        ).toString("base64")}`
+      : null;
+
+  return (
+    <div className="bg-gray-800 rounded-xl shadow-md p-4 sm:p-5 flex flex-col justify-between hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+      <div className="relative w-full h-48 sm:h-56 md:h-60 flex items-center justify-center mb-4 overflow-hidden rounded-lg">
+        {firstImage ? (
           <Image
-            src={product?.image}
+            src={firstImage}
             alt={product.name}
-            width={100}
-            height={200}
-            className={`max-h-48 rounded ${isOutOfStock ? "opacity-50" : ""}`}
+            width={400}
+            height={300}
+            className={`object-cover w-full h-full rounded-lg transition-transform duration-500 ${
+              isOutOfStock ? "opacity-50" : "group-hover:scale-105"
+            }`}
           />
         ) : (
-          <div className="text-sm text-gray-400">No image</div>
+          <div className="flex items-center justify-center w-full h-full text-sm text-gray-400 bg-gray-700 rounded-lg">
+            No image
+          </div>
         )}
 
-        {/* 🔴 Overlay if Out of Stock */}
         {isOutOfStock && (
-          <div className="absolute top-4 right-4 bg-red-600 text-white text-xs px-2 py-1 rounded">
+          <div className="absolute top-2 right-2 bg-red-600 text-white text-xs sm:text-sm px-2 py-1 rounded-md shadow">
             Out of Stock
           </div>
         )}
       </div>
 
-      <h3 className="font-semibold">{product.name}</h3>
-      <p className="text-sm text-gray-200">{product.category || "General"}</p>
-
-      <div className="mt-2 flex items-center justify-between">
-        <div className="text-lg font-bold">${product.price}</div>
-
-        <Link
-          href={`/product/${product._id}`}
-          className={`text-sm px-3 py-1 border rounded ${
-            isOutOfStock
-              ? "opacity-50 cursor-not-allowed pointer-events-none"
-              : ""
-          }`}
-        >
-          View
-        </Link>
+      <div className="flex-1">
+        <h3 className="font-semibold text-white text-lg mb-1 truncate text-center sm:text-left">
+          {product.name}
+        </h3>
+        <p className="text-gray-400 text-sm mb-2 text-center sm:text-left">
+          {product.category || "General"}
+        </p>
       </div>
 
-      {/* 🔘 Stock indicator */}
-      <p
-        className={`mt-2 text-sm font-semibold ${
-          isOutOfStock ? "text-red-400" : "text-green-400"
-        }`}
-      >
-        {isOutOfStock ? "Out of Stock" : "In Stock"}
-      </p>
+      <div className="mt-auto">
+        <div className="flex items-center justify-between mt-2">
+          <div className="text-lg sm:text-xl font-bold text-green-400">
+            ${product.price}
+          </div>
+
+          <Link
+            href={`/product/${product._id}`}
+            className={`text-sm sm:text-base px-3 py-1.5 rounded-md border border-gray-600 text-white hover:bg-blue-600 transition-all duration-300 ${
+              isOutOfStock
+                ? "opacity-50 cursor-not-allowed pointer-events-none"
+                : ""
+            }`}
+          >
+            View
+          </Link>
+        </div>
+
+        <p
+          className={`mt-2 text-sm sm:text-base font-medium ${
+            isOutOfStock ? "text-red-400" : "text-green-400"
+          }`}
+        >
+          {isOutOfStock ? "Out of Stock" : "In Stock"}
+        </p>
+      </div>
     </div>
   );
 }
