@@ -217,9 +217,17 @@ export default function CartPage() {
                       key={p._id}
                       className="bg-gray-700 p-4 rounded text-white"
                     >
-                      {p.image ? (
+                      {p.images && p.images.length > 0 ? (
                         <img
-                          src={p.image}
+                          src={
+                            p.images[0].data
+                              ? `data:${
+                                  p.images[0].contentType
+                                };base64,${Buffer.from(
+                                  p.images[0].data
+                                ).toString("base64")}`
+                              : p.images[0]
+                          }
                           alt={p.name}
                           className="w-full h-40 object-cover rounded mb-2"
                         />
