@@ -73,10 +73,10 @@ export default function AdminDashboard() {
                 <ul className="ml-4 list-disc">
                   {order.items?.map((item, i) => (
                     <li key={i}>
-                      {item.product?.name || item.product} × {item.quantity} ($
+                      {item.product?.name || item.product} × {item.quantity} (৳
                       {item.product?.price || "N/A"} each) —{" "}
                       <strong className="text-green-400">
-                        Total: $
+                        Total: ৳
                         {item.product?.price
                           ? item.product.price * item.quantity
                           : "N/A"}

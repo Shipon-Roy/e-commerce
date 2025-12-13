@@ -49,7 +49,5 @@ export async function GET() {
 
   const categories = Array.from(categoryMap.values());
 
-  console.log("🧩 Categories sending to client:", categories);
-
   return Response.json(categories);
 }

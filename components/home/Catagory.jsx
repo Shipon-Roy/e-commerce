@@ -33,11 +33,8 @@ export default function CategoryPage() {
         </h1>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 place-items-center">
-          {categories.map((cat) => (
-            <div
-              key={cat.slug}
-              className="text-center flex flex-col items-center"
-            >
+          {categories.map((cat, index) => (
+            <div key={index} className="text-center flex flex-col items-center">
               <Link
                 href={`/category/${cat.slug}`}
                 className="relative group w-32 h-32 sm:w-40 sm:h-40 md:w-44 md:h-44 rounded-full overflow-hidden border-4 border-green-400 hover:border-green-300 transition-all block"

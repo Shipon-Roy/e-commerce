@@ -1,35 +1,42 @@
 import dbConnect from "@/lib/dbConnect";
 import Product from "@/lib/models/Product";
+import { NextResponse } from "next/server";
 
 // GET all products
 export async function GET() {
   await dbConnect();
   const products = await Product.find({}).sort({ createdAt: -1 });
-  return new Response(JSON.stringify(products), { status: 200 });
+  return NextResponse.json(products);
 }
 
-// POST new product with multiple images
+// POST create product
 export async function POST(req) {
   await dbConnect();
 
   const formData = await req.formData();
+
   const name = formData.get("name");
   const price = Number(formData.get("price"));
+  const offerPrice = formData.get("offerPrice")
+    ? Number(formData.get("offerPrice"))
+    : undefined;
+
   const category = formData.get("category");
   const description = formData.get("description");
+  const sizes = JSON.parse(formData.get("sizes") || "[]");
 
   if (!name || !price || !category) {
-    return new Response(
-      JSON.stringify({ error: "Name, Price & Category required" }),
+    return NextResponse.json(
+      { error: "Name, Price & Category required" },
       { status: 400 }
     );
   }
 
   const images = [];
   for (const file of formData.getAll("images")) {
-    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(await file.arrayBuffer());
     images.push({
-      data: Buffer.from(arrayBuffer),
+      data: buffer,
       contentType: file.type,
     });
   }
@@ -37,10 +44,12 @@ export async function POST(req) {
   const product = await Product.create({
     name,
     price,
+    offerPrice,
     category,
     description,
+    sizes,
     images,
   });
 
-  return new Response(JSON.stringify(product), { status: 201 });
+  return NextResponse.json(product, { status: 201 });
 }

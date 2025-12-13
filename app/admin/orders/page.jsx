@@ -70,10 +70,10 @@ export default function AdminOrders() {
                               Quantity: {i.quantity}
                             </p>
                             <p className="text-gray-300 text-sm">
-                              Unit Price: ${i.product.price}
+                              Unit Price: ৳{i.product.price}
                             </p>
                             <p className="text-green-400 text-sm font-semibold">
-                              Total: ${i.product.price * i.quantity}
+                              Total: ৳{i.product.price * i.quantity}
                             </p>
                           </li>
                         ))}

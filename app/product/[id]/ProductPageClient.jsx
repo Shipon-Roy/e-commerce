@@ -3,8 +3,10 @@
 import { useState } from "react";
 import AddToCartButton from "@/components/AddToCartButton";
 import Container from "@/components/Container";
+import ProductDescript from "@/components/products/ProductDescript";
 
 export default function ProductPageClient({ product, relatedProducts }) {
+  const [selectedSize, setSelectedSize] = useState([]);
   const firstImage =
     product.images?.length > 0
       ? `data:${product.images[0].contentType};base64,${product.images[0].data}`
@@ -51,12 +53,47 @@ export default function ProductPageClient({ product, relatedProducts }) {
             {/* ✅ Product Details */}
             <div className="w-full lg:w-1/2 space-y-4">
               <h1 className="text-3xl font-bold">{product.name}</h1>
-              <p className="text-gray-300 leading-relaxed text-base">
+              {/* <p className="text-gray-300 leading-relaxed text-base">
                 {product.description}
-              </p>
-              <p className="text-2xl font-semibold text-green-400">
-                ${product.price}
-              </p>
+              </p> */}
+              <div className="flex items-center gap-3">
+                {product.offerPrice ? (
+                  <>
+                    <span className="text-2xl font-bold text-green-400">
+                      ৳{product.offerPrice}
+                    </span>
+                    <span className="line-through text-gray-400">
+                      ৳{product.price}
+                    </span>
+                  </>
+                ) : (
+                  <span className="text-2xl font-bold text-green-400">
+                    ৳{product.price}
+                  </span>
+                )}
+              </div>
+
+              {/* SIZES */}
+              {product.sizes?.length > 0 && (
+                <div>
+                  <p className="mb-2 font-medium">Select Size</p>
+                  <div className="flex gap-2">
+                    {product.sizes.map((size) => (
+                      <button
+                        key={size}
+                        onClick={() => setSelectedSize(size)}
+                        className={`px-4 py-2 rounded border ${
+                          selectedSize === size
+                            ? "bg-green-600 border-green-500"
+                            : "bg-gray-700 border-gray-600"
+                        }`}
+                      >
+                        {size}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {product.inStock ? (
                 <AddToCartButton product={product} />
@@ -95,7 +132,7 @@ export default function ProductPageClient({ product, relatedProducts }) {
                         className="w-full h-44 sm:h-48 object-cover rounded mb-3"
                       />
                       <h3 className="font-semibold text-lg mb-1">{p.name}</h3>
-                      <p className="text-green-400 font-medium">${p.price}</p>
+                      <p className="text-green-400 font-medium">৳{p.price}</p>
 
                       {p.inStock ? (
                         <div className="mt-3">
@@ -115,6 +152,10 @@ export default function ProductPageClient({ product, relatedProducts }) {
               </div>
             </div>
           )}
+          <ProductDescript
+            title={product.name}
+            description={product.description}
+          />
         </div>
       </Container>
     </div>

@@ -46,7 +46,7 @@ export default function UserDashboard() {
                 >
                   <span>{item.product.name}</span>
                   <span>
-                    ${item.product.price} × {item.quantity}
+                    ৳{item.product.price} × {item.quantity}
                   </span>
                 </li>
               ))}

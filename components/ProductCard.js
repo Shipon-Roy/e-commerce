@@ -50,7 +50,7 @@ export default function ProductCard({ product }) {
       <div className="mt-auto">
         <div className="flex items-center justify-between mt-2">
           <div className="text-lg sm:text-xl font-bold text-green-400">
-            ${product.price}
+            ৳{product.price}
           </div>
 
           <Link
