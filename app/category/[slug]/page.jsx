@@ -1,7 +1,7 @@
 "use client";
 import React, { use, useEffect, useState } from "react";
-import Container from "@/components/Container";
-import ProductCard from "@/components/ProductCard";
+import Container from "../../../components/Container";
+import ProductCard from "../../../components/ProductCard";
 
 export default function CategoryPage({ params }) {
   // ✅ unwrap params using React.use()

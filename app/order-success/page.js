@@ -12,7 +12,7 @@ export default function OrderSuccess() {
   }, [router]);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-green-900 via-green-800 to-green-700 text-white px-4 text-center">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-linear-to-br from-green-900 via-green-800 to-green-700 text-white px-4 text-center">
       {/* Success Icon */}
       <CheckCircle className="w-20 h-20 text-green-400 mb-4 animate-bounce" />
 
