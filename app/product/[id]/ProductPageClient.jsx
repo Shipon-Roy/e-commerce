@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import AddToCartButton from "@/components/AddToCartButton";
-import Container from "@/components/Container";
-import ProductDescript from "@/components/products/ProductDescript";
+import AddToCartButton from "../../../components/AddToCartButton";
+import Container from "../../../components/Container";
+import ProductDescript from "../../../components/products/ProductDescript";
 
 export default function ProductPageClient({ product, relatedProducts }) {
   const [selectedSize, setSelectedSize] = useState([]);

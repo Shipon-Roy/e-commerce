@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useCart } from "@/context/CartContext";
-import Container from "@/components/Container";
+import { useCart } from "../../context/CartContext";
+import Container from "../../components/Container";
 import OrderSuccess from "../order-success/page";
 
 export default function CartPage() {

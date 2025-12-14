@@ -1,5 +1,5 @@
-import dbConnect from "@/lib/dbConnect";
-import Product from "@/lib/models/Product";
+import dbConnect from "../../../lib/dbConnect";
+import Product from "../../../lib/models/Product";
 import ProductPageClient from "./ProductPageClient";
 
 export const dynamic = "force-dynamic";

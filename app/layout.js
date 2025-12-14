@@ -2,7 +2,7 @@ import "./globals.css";
 import { CartProvider } from "../context/CartContext";
 import { AuthProvider } from "../context/AuthContext";
 import Navbar from "../components/Navbar";
-import Footer from "@/components/Footer";
+import Footer from "../components/Footer";
 
 export const metadata = {
   title: "My Store",
@@ -19,7 +19,7 @@ export default function RootLayout({ children }) {
             <Navbar />
 
             {/* 🛍️ Main content area */}
-            <main className="flex-grow bg-gray-900">{children}</main>
+            <main className="grow bg-gray-900">{children}</main>
 
             {/* ⚓ Footer */}
             <Footer />

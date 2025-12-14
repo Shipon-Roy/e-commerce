@@ -1,6 +1,6 @@
 "use client";
 
-import ProtectedRoute from "@/components/ProtectedRoute";
+import ProtectedRoute from "../../../components/ProtectedRoute";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 

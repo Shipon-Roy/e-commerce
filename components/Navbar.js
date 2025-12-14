@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
-import { useCart } from "@/context/CartContext";
-import { useAuth } from "@/context/AuthContext";
+import { useCart } from "../context/CartContext";
+import { useAuth } from "../context/AuthContext";
 import Link from "next/link";
 import { Menu, X } from "lucide-react"; // icon
 

@@ -1,6 +1,4 @@
-// app/page.jsx (Next.js 13+ app directory)
 "use client";
-import Image from "next/image";
 
 export default function ProductDescript({ title, description }) {
   const product = {

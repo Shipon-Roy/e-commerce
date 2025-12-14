@@ -1,9 +1,11 @@
-import dbConnect from "@/lib/dbConnect";
-import Product from "@/lib/models/Product";
+import dbConnect from "../../../../../lib/dbConnect";
 import { NextResponse } from "next/server";
+import Product from "../../../../../lib/models/Product";
 
 export async function PUT(req, { params }) {
   await dbConnect();
+
+  const { id } = await params; // ✅ unwrap params
 
   const formData = await req.formData();
 
@@ -28,7 +30,7 @@ export async function PUT(req, { params }) {
     );
   }
 
-  const updated = await Product.findByIdAndUpdate(params.id, updateData, {
+  const updated = await Product.findByIdAndUpdate(id, updateData, {
     new: true,
   });
 
@@ -37,6 +39,10 @@ export async function PUT(req, { params }) {
 
 export async function DELETE(req, { params }) {
   await dbConnect();
-  await Product.findByIdAndDelete(params.id);
+
+  const { id } = await params; // ✅ unwrap params
+
+  await Product.findByIdAndDelete(id);
+
   return NextResponse.json({ success: true });
 }

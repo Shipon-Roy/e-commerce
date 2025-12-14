@@ -9,7 +9,7 @@ import Image from "next/image";
 
 export default function Banner() {
   return (
-    <div className="w-full h-[250px] sm:h-[350px] md:h-[450px] lg:h-[550px] relative">
+    <div className="w-full h-62.5 sm:h-87.5 md:h-112.5 lg:h-137.5 relative">
       <Swiper
         spaceBetween={30}
         centeredSlides={true}

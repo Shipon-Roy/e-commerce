@@ -1,6 +1,6 @@
-import Banner from "@/components/home/Banner";
-import Catagory from "@/components/home/Catagory";
-import Products from "@/components/home/Products";
+import Banner from "../components/home/Banner";
+import Catagory from "../components/home/Catagory";
+import Products from "../components/home/Products";
 
 export default function Home() {
   return (
