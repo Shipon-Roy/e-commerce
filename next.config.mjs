@@ -4,9 +4,7 @@ const nextConfig = {
   images: {
     domains: ["storage.apex4u.com", "ibb.com", "i.ibb.com", "i.ibb.co.com"],
   },
-  experimental: {
-    appDir: true,
-  },
+  experimental: {},
 };
 
 export default nextConfig;
