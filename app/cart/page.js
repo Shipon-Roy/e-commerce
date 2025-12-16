@@ -127,7 +127,7 @@ export default function CartPage() {
                   </h3>
 
                   <p className="text-sm text-gray-400">
-                    ${item.product.price} × {item.quantity}
+                    ৳{item.product.price} × {item.quantity}
                   </p>
                 </div>
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
@@ -147,7 +147,7 @@ export default function CartPage() {
                     </button>
                   </div>
                   <span className="font-semibold">
-                    ${item.product.price * item.quantity}
+                    ৳{item.product.price * item.quantity}
                   </span>
                   <button
                     onClick={() => removeFromCart(item.product._id)}
@@ -160,7 +160,7 @@ export default function CartPage() {
             ))}
 
             <div className="text-right text-xl font-semibold mt-4 text-white">
-              Total: ${total}
+              Total: ৳{total}
             </div>
 
             <button
@@ -276,7 +276,7 @@ export default function CartPage() {
                         </div>
                       )}
                       <h3 className="font-semibold">{p.name}</h3>
-                      <p>${p.price}</p>
+                      <p>৳{p.price}</p>
                       <button
                         onClick={() => addToCart(p)}
                         className="mt-2 w-full bg-blue-600 py-1 rounded hover:bg-blue-700"
