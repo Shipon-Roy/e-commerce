@@ -68,6 +68,9 @@ export default function AdminDashboard() {
                   {order.customer?.address}
                 </p>
                 <p>
+                  <strong>Size:</strong> {order.items[0].size}
+                </p>
+                <p>
                   <strong>Status:</strong> {order.status}
                 </p>
                 <ul className="ml-4 list-disc">

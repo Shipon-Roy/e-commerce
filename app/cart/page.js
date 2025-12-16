@@ -18,10 +18,11 @@ export default function CartPage() {
   const [showModal, setShowModal] = useState(false);
   const [form, setForm] = useState({
     name: "",
-    email: "",
+    phone: "",
     address: "",
     paymentMethod: "COD",
   });
+
   const [relatedProducts, setRelatedProducts] = useState([]);
 
   const total = cart.reduce((sum, i) => sum + i.product.price * i.quantity, 0);
@@ -47,22 +48,47 @@ export default function CartPage() {
 
   const handleOrderConfirm = async (e) => {
     e.preventDefault();
+
+    if (!/^01\d{9}$/.test(form.phone)) {
+      alert("Phone number must be 11 digits and start with 01");
+      return;
+    }
+
     try {
       const res = await fetch("/api/order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          items: cart,
+          customer: {
+            name: form.name,
+            phone: form.phone,
+            address: form.address,
+          },
+
+          items: cart.map((item) => ({
+            product: {
+              _id: item.product._id,
+              name: item.product.name,
+              price: item.product.price,
+              size: item.product.selectedSize || null,
+            },
+            quantity: item.quantity,
+          })),
+
           totalPrice: total,
-          customer: form,
           paymentMethod: form.paymentMethod,
         }),
       });
-      if (res.ok) {
-        clearCart();
-        setOrderPlaced(true);
-        setShowModal(false);
-      } else console.error("Order failed");
+
+      if (!res.ok) {
+        const err = await res.json();
+        console.error("Order failed:", err);
+        return;
+      }
+
+      clearCart();
+      setOrderPlaced(true);
+      setShowModal(false);
     } catch (err) {
       console.error("Order failed:", err);
     }
@@ -85,11 +111,21 @@ export default function CartPage() {
           <>
             {cart.map((item) => (
               <div
-                key={item.product._id}
+                key={`${item.product._id}-${
+                  item.product.selectedSize || "default"
+                }`}
                 className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b pb-3 mb-3 text-white gap-3"
               >
                 <div className="flex-1">
-                  <h3 className="font-semibold">{item.product.name}</h3>
+                  <h3 className="font-semibold">
+                    {item.product.name}
+                    {item.product.selectedSize && (
+                      <span className="text-sm text-gray-400 ml-2">
+                        (Size: {item.product.selectedSize})
+                      </span>
+                    )}
+                  </h3>
+
                   <p className="text-sm text-gray-400">
                     ${item.product.price} × {item.quantity}
                   </p>
@@ -164,13 +200,16 @@ export default function CartPage() {
                       className="w-full border p-3 rounded bg-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500"
                       required
                     />
+
                     <input
-                      type="email"
-                      placeholder="Email"
-                      value={form.email}
+                      type="text"
+                      placeholder="Phone Number"
+                      value={form.phone}
                       onChange={(e) =>
-                        setForm({ ...form, email: e.target.value })
+                        setForm({ ...form, phone: e.target.value.trim() })
                       }
+                      pattern="01[0-9]{9}"
+                      maxLength={11}
                       className="w-full border p-3 rounded bg-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500"
                       required
                     />

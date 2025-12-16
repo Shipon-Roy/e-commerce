@@ -7,26 +7,38 @@ export async function POST(req) {
     await dbConnect();
     const body = await req.json();
 
-    const newOrder = new Order({
-      customer: {
-        name: body.customer.name,
-        email: body.customer.email,
-        address: body.customer.address || "N/A", // fallback
+    // Build items array with sizes
+    const itemsWithSize = body.items.map((item) => ({
+      product: {
+        _id: item.product._id,
+        name: item.product.name,
+        price: item.product.price,
       },
-      items: body.items,
+      size: item.product.size || item.product.selectedSize,
+      quantity: item.quantity,
+    }));
+
+    const newOrder = new Order({
+      customer: body.customer, // name, phone, address
+      items: itemsWithSize, // items with size
       totalPrice: body.totalPrice,
       paymentMethod: body.paymentMethod,
     });
 
     await newOrder.save();
+
     return NextResponse.json(
       { message: "Order placed successfully" },
       { status: 201 }
     );
   } catch (error) {
-    console.error("Order POST Error:", error);
+    console.error("ORDER SAVE ERROR:", error);
+
     return NextResponse.json(
-      { error: "Failed to place order" },
+      {
+        error: error.message,
+        details: error.errors || null,
+      },
       { status: 500 }
     );
   }

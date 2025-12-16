@@ -18,18 +18,28 @@ export function CartProvider({ children }) {
 
   const addToCart = (product) => {
     setCart((prev) => {
-      const existing = prev.find((item) => item.product._id === product._id);
+      const existing = prev.find(
+        (item) =>
+          item.product._id === product._id &&
+          item.product.selectedSize === product.selectedSize
+      );
+
       if (existing) {
-        // quantity বাড়ানো
         return prev.map((item) =>
-          item.product._id === product._id
+          item.product._id === product._id &&
+          item.product.selectedSize === product.selectedSize
             ? { ...item, quantity: item.quantity + 1 }
             : item
         );
-      } else {
-        // নতুন আইটেম
-        return [...prev, { product, quantity: 1 }];
       }
+
+      return [
+        ...prev,
+        {
+          product,
+          quantity: 1,
+        },
+      ];
     });
   };
 

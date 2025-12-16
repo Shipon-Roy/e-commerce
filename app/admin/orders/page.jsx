@@ -54,7 +54,7 @@ export default function AdminOrders() {
                     </td>
 
                     <td className="px-4 py-3 text-gray-300">
-                      {order.customer?.email}
+                      {order.customer?.phone}
                     </td>
 
                     <td className="px-4 py-3 text-gray-400 text-sm">
@@ -68,6 +68,9 @@ export default function AdminOrders() {
                             <p className="font-medium">{i.product.name}</p>
                             <p className="text-gray-400 text-sm">
                               Quantity: {i.quantity}
+                            </p>
+                            <p className="text-gray-400 text-sm">
+                              Size: {i.size}
                             </p>
                             <p className="text-gray-300 text-sm">
                               Unit Price: ৳{i.product.price}

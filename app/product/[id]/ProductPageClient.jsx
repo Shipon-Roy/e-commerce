@@ -96,7 +96,10 @@ export default function ProductPageClient({ product, relatedProducts }) {
               )}
 
               {product.inStock ? (
-                <AddToCartButton product={product} />
+                <AddToCartButton
+                  product={product}
+                  selectedSize={selectedSize}
+                />
               ) : (
                 <button
                   disabled
