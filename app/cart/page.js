@@ -25,11 +25,23 @@ export default function CartPage() {
 
   const [relatedProducts, setRelatedProducts] = useState([]);
 
-  const total = cart.reduce((sum, i) => sum + i.product.price * i.quantity, 0);
+  // ✅ helper: offer price > regular price
+  const getPrice = (product) => {
+    return product.offerPrice && product.offerPrice > 0
+      ? product.offerPrice
+      : product.price;
+  };
+
+  // ✅ total calculation
+  const total = cart.reduce(
+    (sum, i) => sum + getPrice(i.product) * i.quantity,
+    0
+  );
 
   useEffect(() => {
     const fetchRelated = async () => {
       if (cart.length === 0) return;
+
       const category = cart[0].product.category;
       if (!category) return;
 
@@ -69,7 +81,7 @@ export default function CartPage() {
             product: {
               _id: item.product._id,
               name: item.product.name,
-              price: item.product.price,
+              price: getPrice(item.product), // ✅ correct price
               size: item.product.selectedSize || null,
             },
             quantity: item.quantity,
@@ -114,7 +126,7 @@ export default function CartPage() {
                 key={`${item.product._id}-${
                   item.product.selectedSize || "default"
                 }`}
-                className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b pb-3 mb-3 text-white gap-3"
+                className="flex flex-col sm:flex-row justify-between border-b pb-3 mb-3 text-white gap-3"
               >
                 <div className="flex-1">
                   <h3 className="font-semibold">
@@ -126,10 +138,24 @@ export default function CartPage() {
                     )}
                   </h3>
 
+                  {/* ✅ price display */}
                   <p className="text-sm text-gray-400">
-                    ৳{item.product.price} × {item.quantity}
+                    {item.product.offerPrice ? (
+                      <>
+                        <span className="line-through mr-2">
+                          ৳{item.product.price}
+                        </span>
+                        <span className="text-green-400">
+                          ৳{item.product.offerPrice}
+                        </span>
+                      </>
+                    ) : (
+                      <>৳{item.product.price}</>
+                    )}
+                    {" × "} {item.quantity}
                   </p>
                 </div>
+
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
                   <div className="flex items-center border rounded">
                     <button
@@ -146,9 +172,11 @@ export default function CartPage() {
                       +
                     </button>
                   </div>
+
                   <span className="font-semibold">
-                    ৳{item.product.price * item.quantity}
+                    ৳{getPrice(item.product) * item.quantity}
                   </span>
+
                   <button
                     onClick={() => removeFromCart(item.product._id)}
                     className="text-red-500 border px-2 py-1 rounded hover:bg-red-600 hover:text-white"
@@ -170,19 +198,18 @@ export default function CartPage() {
               Proceed to Checkout
             </button>
 
+            {/* Checkout Modal */}
             {showModal && (
               <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50 p-4">
-                <div className="bg-gray-800 rounded p-4 sm:p-6 w-full max-w-md relative max-h-[90vh] overflow-y-auto">
-                  {/* Close Button */}
+                <div className="bg-gray-800 rounded p-4 w-full max-w-md relative">
                   <button
                     onClick={() => setShowModal(false)}
-                    className="absolute top-3 right-3 text-white font-bold text-xl sm:text-2xl p-2 rounded hover:bg-gray-700 transition"
-                    aria-label="Close"
+                    className="absolute top-3 right-3 text-white text-2xl"
                   >
                     ×
                   </button>
 
-                  <h2 className="text-xl font-bold mb-4 text-white text-center sm:text-left">
+                  <h2 className="text-xl font-bold mb-4 text-white">
                     Customer Details
                   </h2>
 
@@ -197,7 +224,7 @@ export default function CartPage() {
                       onChange={(e) =>
                         setForm({ ...form, name: e.target.value })
                       }
-                      className="w-full border p-3 rounded bg-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+                      className="w-full p-3 rounded bg-gray-700"
                       required
                     />
 
@@ -208,26 +235,27 @@ export default function CartPage() {
                       onChange={(e) =>
                         setForm({ ...form, phone: e.target.value.trim() })
                       }
-                      pattern="01[0-9]{9}"
                       maxLength={11}
-                      className="w-full border p-3 rounded bg-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+                      className="w-full p-3 rounded bg-gray-700"
                       required
                     />
+
                     <textarea
                       placeholder="Address"
                       value={form.address}
                       onChange={(e) =>
                         setForm({ ...form, address: e.target.value })
                       }
-                      className="w-full border p-3 rounded bg-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+                      className="w-full p-3 rounded bg-gray-700"
                       required
                     />
+
                     <select
                       value={form.paymentMethod}
                       onChange={(e) =>
                         setForm({ ...form, paymentMethod: e.target.value })
                       }
-                      className="w-full border p-3 rounded bg-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+                      className="w-full p-3 rounded bg-gray-700"
                     >
                       <option value="COD">Cash on Delivery</option>
                       <option value="Online">Online Payment</option>
@@ -235,7 +263,7 @@ export default function CartPage() {
 
                     <button
                       type="submit"
-                      className="w-full bg-green-600 text-white px-6 py-3 rounded hover:bg-green-700 transition"
+                      className="w-full bg-green-600 py-3 rounded hover:bg-green-700"
                     >
                       Confirm Order
                     </button>

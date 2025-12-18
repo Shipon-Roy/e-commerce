@@ -18,6 +18,7 @@ export default function AdminProducts() {
     category: "",
     description: "",
     sizes: [],
+    inStock: true, // ✅ Add inStock
   });
 
   // ================= FETCH PRODUCTS =================
@@ -61,6 +62,7 @@ export default function AdminProducts() {
     formData.append("category", form.category);
     formData.append("description", form.description);
     formData.append("sizes", JSON.stringify(form.sizes));
+    formData.append("inStock", form.inStock);
 
     images.forEach((img) => formData.append("images", img));
 
@@ -85,6 +87,7 @@ export default function AdminProducts() {
       category: "",
       description: "",
       sizes: [],
+      inStock: true,
     });
     setImages([]);
     setEditing(null);
@@ -102,6 +105,7 @@ export default function AdminProducts() {
       category: p.category || "",
       description: p.description || "",
       sizes: p.sizes || [],
+      inStock: p.inStock !== false,
     });
     setShowModal(true);
   };
@@ -110,6 +114,16 @@ export default function AdminProducts() {
   const handleDelete = async (id) => {
     if (!confirm("Delete product?")) return;
     await fetch(`/api/admin/products/${id}`, { method: "DELETE" });
+    fetchProducts();
+  };
+
+  // ================= TOGGLE STOCK =================
+  const toggleStock = async (p) => {
+    await fetch(`/api/admin/products/${p._id}`, {
+      method: "PUT",
+      body: JSON.stringify({ inStock: !p.inStock }),
+      headers: { "Content-Type": "application/json" },
+    });
     fetchProducts();
   };
 
@@ -253,6 +267,7 @@ export default function AdminProducts() {
                 <th>Name</th>
                 <th>Price</th>
                 <th>Offer</th>
+                <th>Stock</th>
                 <th>Sizes</th>
                 <th>Action</th>
               </tr>
@@ -275,8 +290,19 @@ export default function AdminProducts() {
                     )}
                   </td>
                   <td>{p.name}</td>
-                  <td>${p.price}</td>
+                  <td>৳{p.price}</td>
                   <td className="text-green-400">{p.offerPrice || "-"}</td>
+                  <td>
+                    <span
+                      onClick={() => toggleStock(p)} // ✅ click badge to toggle
+                      className={`cursor-pointer px-2 py-1 rounded text-xs font-semibold ${
+                        p.inStock ? "bg-green-600" : "bg-red-600"
+                      }`}
+                    >
+                      {p.inStock ? "In Stock" : "Stock Out"}
+                    </span>
+                  </td>
+
                   <td>{p.sizes?.join(", ")}</td>
                   <td className="space-x-2">
                     <button
@@ -285,6 +311,7 @@ export default function AdminProducts() {
                     >
                       Edit
                     </button>
+
                     <button
                       onClick={() => handleDelete(p._id)}
                       className="bg-red-600 px-2 py-1 rounded"

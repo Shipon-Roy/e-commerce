@@ -68,10 +68,10 @@ export default function Products() {
                 className="bg-gray-800 w-full p-2 rounded"
               >
                 <option value="">Any Price</option>
-                <option value="0-50">Under $50</option>
-                <option value="50-100">$50 - $100</option>
-                <option value="100-500">$100 - $500</option>
-                <option value="500+">Above $500</option>
+                <option value="0-50">Under ৳50</option>
+                <option value="50-100">৳50 - ৳100</option>
+                <option value="100-500">৳100 - ৳500</option>
+                <option value="500+">Above ৳500</option>
               </select>
             </div>
 
