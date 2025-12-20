@@ -31,7 +31,7 @@ export default function AdminDashboard() {
   if (!stats) return <p className="text-white">Loading...</p>;
 
   return (
-    <ProtectedRoute role="admin">
+    <ProtectedRoute roles={["admin"]}>
       <div className="space-y-6 text-white">
         <h1 className="text-3xl font-bold">📊 Admin Dashboard</h1>
 

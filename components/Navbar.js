@@ -43,14 +43,12 @@ export default function Navbar() {
           {user ? (
             <>
               <span className="text-white">Hi, {user?.role || "User"}</span>
-              {user?.role === "admin" && (
-                <Link
-                  href="/admin"
-                  className="px-3 py-1 border rounded text-white hover:bg-gray-700"
-                >
-                  Dashboard
-                </Link>
+              {user?.role === "admin" && <Link href="/admin">Dashboard</Link>}
+
+              {user?.role === "moderator" && (
+                <Link href="/moderator">Dashboard</Link>
               )}
+
               <button
                 onClick={logout}
                 className="px-3 py-1 border rounded hover:bg-gray-700"

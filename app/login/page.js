@@ -25,8 +25,13 @@ export default function LoginPage() {
         role: data.role,
       });
 
-      if (data.role === "admin") router.push("/admin");
-      else router.push("/");
+      if (data.role === "admin") {
+        router.push("/admin");
+      } else if (data.role === "moderator") {
+        router.push("/moderator");
+      } else {
+        router.push("/");
+      }
     } else {
       alert("Invalid credentials");
     }

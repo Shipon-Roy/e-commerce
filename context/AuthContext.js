@@ -14,7 +14,7 @@ export function AuthProvider({ children }) {
       if (storedUser) {
         try {
           const parsed = JSON.parse(storedUser);
-          if (parsed.role === "user" || parsed.role === "admin") {
+          if (["user", "moderator", "admin"].includes(parsed.role)) {
             setUser(parsed);
           }
         } catch (err) {

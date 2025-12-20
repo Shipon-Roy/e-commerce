@@ -18,8 +18,7 @@ export default function AdminUsersPage() {
     fetchUsers();
   }, []);
 
-  const toggleAdmin = async (id, currentRole) => {
-    const newRole = currentRole === "admin" ? "user" : "admin";
+  const updateRole = async (id, newRole) => {
     await fetch(`/api/admin/users/${id}/role`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
@@ -64,19 +63,44 @@ export default function AdminUsersPage() {
                       <td className="px-4 py-3">{user.name}</td>
                       <td className="px-4 py-3">{user.email}</td>
                       <td className="px-4 py-3">{user.role}</td>
-                      <td className="px-4 py-3 text-right">
-                        <button
-                          onClick={() => toggleAdmin(user._id, user.role)}
-                          className={`px-3 py-1 rounded text-white ${
-                            user.role === "admin"
-                              ? "bg-red-600 hover:bg-red-700"
-                              : "bg-green-600 hover:bg-green-700"
-                          }`}
-                        >
-                          {user.role === "admin"
-                            ? "Remove Admin"
-                            : "Make Admin"}
-                        </button>
+                      <td className="px-4 py-3 text-right space-x-2">
+                        {/* Promote to Moderator */}
+                        {user.role === "user" && (
+                          <button
+                            onClick={() => updateRole(user._id, "moderator")}
+                            className="px-3 py-1 rounded bg-blue-600 hover:bg-blue-700"
+                          >
+                            Make Moderator
+                          </button>
+                        )}
+
+                        {/* Moderator → Admin */}
+                        {user.role === "moderator" && (
+                          <>
+                            <button
+                              onClick={() => updateRole(user._id, "admin")}
+                              className="px-3 py-1 rounded bg-green-600 hover:bg-green-700"
+                            >
+                              Promote to Admin
+                            </button>
+                            <button
+                              onClick={() => updateRole(user._id, "user")}
+                              className="px-3 py-1 rounded bg-red-600 hover:bg-red-700"
+                            >
+                              Remove Moderator
+                            </button>
+                          </>
+                        )}
+
+                        {/* Admin → User */}
+                        {user.role === "admin" && (
+                          <button
+                            onClick={() => updateRole(user._id, "user")}
+                            className="px-3 py-1 rounded bg-red-600 hover:bg-red-700"
+                          >
+                            Remove Admin
+                          </button>
+                        )}
                       </td>
                     </tr>
                   ))
