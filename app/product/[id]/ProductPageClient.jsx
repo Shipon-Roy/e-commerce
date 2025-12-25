@@ -6,7 +6,10 @@ import Container from "../../../components/Container";
 import ProductDescript from "../../../components/products/ProductDescript";
 
 export default function ProductPageClient({ product, relatedProducts }) {
-  const [selectedSize, setSelectedSize] = useState([]);
+  const [selectedSize, setSelectedSize] = useState(null);
+  const [showOrderModal, setShowOrderModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+
   const firstImage =
     product.images?.length > 0
       ? `data:${product.images[0].contentType};base64,${product.images[0].data}`
@@ -18,6 +21,60 @@ export default function ProductPageClient({ product, relatedProducts }) {
     product.images?.map(
       (img) => `data:${img.contentType};base64,${img.data}`
     ) || [];
+
+  const handleOrderSubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const phone = formData.get("phone");
+
+    // ✅ Phone validation (Bangladesh format: 11 digits starting with 01)
+    const phoneRegex = /^01\d{9}$/;
+    if (!phoneRegex.test(phone)) {
+      alert("Phone number must be 11 digits and start with 01");
+      return;
+    }
+
+    const orderPayload = {
+      customer: {
+        name: formData.get("name"),
+        phone,
+        address: formData.get("address"),
+        policeStation: formData.get("policeStation"),
+        district: formData.get("district"),
+      },
+      items: [
+        {
+          product: {
+            _id: product._id,
+            name: product.name,
+            price: product.offerPrice || product.price,
+          },
+          size: selectedSize,
+          quantity: 1,
+        },
+      ],
+      totalPrice: product.offerPrice || product.price,
+      paymentMethod: "COD",
+    };
+
+    try {
+      const res = await fetch("/api/order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(orderPayload),
+      });
+
+      if (res.ok) {
+        setShowOrderModal(false); // hide order modal
+        setShowSuccessModal(true); // show success modal
+      } else {
+        alert("Order failed!");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Order failed!");
+    }
+  };
 
   return (
     <div className="bg-gray-900 min-h-screen text-white py-10">
@@ -96,10 +153,29 @@ export default function ProductPageClient({ product, relatedProducts }) {
               )}
 
               {product.inStock ? (
-                <AddToCartButton
-                  product={product}
-                  selectedSize={selectedSize}
-                />
+                <div>
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    {/* Existing Add to Cart */}
+                    <AddToCartButton
+                      product={product}
+                      selectedSize={selectedSize}
+                    />
+
+                    {/* ✅ Buy Now */}
+                    <button
+                      onClick={() => {
+                        if (product.sizes?.length > 0 && !selectedSize) {
+                          alert("Please select a size");
+                          return;
+                        }
+                        setShowOrderModal(true);
+                      }}
+                      className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg w-full sm:w-auto"
+                    >
+                      Buy Now
+                    </button>
+                  </div>
+                </div>
               ) : (
                 <button
                   disabled
@@ -110,6 +186,101 @@ export default function ProductPageClient({ product, relatedProducts }) {
               )}
             </div>
           </div>
+
+          {showOrderModal && (
+            <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
+              <div className="bg-gray-800 rounded-lg p-5 w-full max-w-md relative text-white">
+                <button
+                  onClick={() => setShowOrderModal(false)}
+                  className="absolute top-2 right-3 text-2xl"
+                >
+                  ×
+                </button>
+
+                <h2 className="text-xl font-bold mb-4">Confirm Your Order</h2>
+
+                {/* Product Info */}
+                <div className="bg-gray-700 p-3 rounded mb-4">
+                  <p className="font-semibold">{product.name}</p>
+                  {selectedSize && (
+                    <p className="text-sm text-gray-300">
+                      Size: {selectedSize}
+                    </p>
+                  )}
+                  <p className="text-green-400 font-bold">
+                    ৳{product.offerPrice || product.price}
+                  </p>
+                </div>
+
+                {/* Order Form */}
+                <form onSubmit={handleOrderSubmit} className="space-y-3">
+                  <input
+                    name="name"
+                    required
+                    placeholder="Full Name"
+                    className="w-full p-2 rounded bg-gray-700"
+                  />
+                  <input
+                    name="phone"
+                    required
+                    placeholder="Phone Number"
+                    className="w-full p-2 rounded bg-gray-700"
+                  />
+                  <textarea
+                    name="address"
+                    required
+                    placeholder="Address"
+                    className="w-full p-2 rounded bg-gray-700"
+                  />
+                  <input
+                    name="policeStation"
+                    required
+                    placeholder="Police Station (Thana)"
+                    className="w-full p-2 rounded bg-gray-700"
+                  />
+                  <input
+                    name="district"
+                    required
+                    placeholder="District (Zila)"
+                    className="w-full p-2 rounded bg-gray-700"
+                  />
+
+                  <button
+                    type="submit"
+                    className="w-full bg-green-600 py-3 rounded hover:bg-green-700"
+                  >
+                    Confirm Order
+                  </button>
+                </form>
+              </div>
+            </div>
+          )}
+
+          {showSuccessModal && (
+            <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
+              <div className="bg-gray-800 rounded-lg p-6 w-full max-w-sm relative text-white text-center">
+                <button
+                  onClick={() => setShowSuccessModal(false)}
+                  className="absolute top-2 right-3 text-2xl"
+                >
+                  ×
+                </button>
+                <h2 className="text-2xl font-bold mb-4 text-green-400">
+                  Order Placed!
+                </h2>
+                <p className="mb-4">
+                  Your order has been successfully placed. Thank you for
+                  shopping with us!
+                </p>
+                <button
+                  onClick={() => setShowSuccessModal(false)}
+                  className="bg-green-600 hover:bg-green-700 px-6 py-3 rounded"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* ✅ Related Products */}
           {relatedProducts?.length > 0 && (

@@ -42,27 +42,34 @@ export function CartProvider({ children }) {
       ];
     });
   };
-
-  const removeFromCart = (id) =>
-    setCart((prev) => prev.filter((item) => item.product._id !== id));
-
   const clearCart = () => setCart([]);
 
-  const increaseQuantity = (id) => {
+  const removeFromCart = (productId, size) => {
+    setCart((prev) =>
+      prev.filter(
+        (item) =>
+          !(
+            item.product._id === productId && item.product.selectedSize === size
+          )
+      )
+    );
+  };
+
+  const increaseQuantity = (productId, size) => {
     setCart((prev) =>
       prev.map((item) =>
-        item.product._id === id
+        item.product._id === productId && item.product.selectedSize === size
           ? { ...item, quantity: item.quantity + 1 }
           : item
       )
     );
   };
 
-  const decreaseQuantity = (id) => {
+  const decreaseQuantity = (productId, size) => {
     setCart((prev) =>
       prev
         .map((item) =>
-          item.product._id === id
+          item.product._id === productId && item.product.selectedSize === size
             ? { ...item, quantity: item.quantity - 1 }
             : item
         )

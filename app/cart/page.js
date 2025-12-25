@@ -20,6 +20,8 @@ export default function CartPage() {
     name: "",
     phone: "",
     address: "",
+    policeStation: "",
+    district: "",
     paymentMethod: "COD",
   });
 
@@ -75,15 +77,16 @@ export default function CartPage() {
             name: form.name,
             phone: form.phone,
             address: form.address,
+            policeStation: form.policeStation,
+            district: form.district,
           },
-
           items: cart.map((item) => ({
             product: {
               _id: item.product._id,
               name: item.product.name,
-              price: getPrice(item.product), // ✅ correct price
-              size: item.product.selectedSize || null,
+              price: getPrice(item.product),
             },
+            size: item.product.selectedSize, // ✅ already selected
             quantity: item.quantity,
           })),
 
@@ -121,11 +124,11 @@ export default function CartPage() {
           <p className="text-white text-center">Your cart is empty.</p>
         ) : (
           <>
-            {cart.map((item) => (
+            {cart.map((item, idx) => (
               <div
                 key={`${item.product._id}-${
                   item.product.selectedSize || "default"
-                }`}
+                }-${idx}`}
                 className="flex flex-col sm:flex-row justify-between border-b pb-3 mb-3 text-white gap-3"
               >
                 <div className="flex-1">
@@ -159,15 +162,25 @@ export default function CartPage() {
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
                   <div className="flex items-center border rounded">
                     <button
-                      onClick={() => decreaseQuantity(item.product._id)}
                       className="px-3 py-1 bg-gray-700 hover:bg-gray-600"
+                      onClick={() =>
+                        decreaseQuantity(
+                          item.product._id,
+                          item.product.selectedSize
+                        )
+                      }
                     >
                       -
                     </button>
-                    <span className="px-3">{item.quantity}</span>
+
                     <button
-                      onClick={() => increaseQuantity(item.product._id)}
                       className="px-3 py-1 bg-gray-700 hover:bg-gray-600"
+                      onClick={() =>
+                        increaseQuantity(
+                          item.product._id,
+                          item.product.selectedSize
+                        )
+                      }
                     >
                       +
                     </button>
@@ -178,7 +191,12 @@ export default function CartPage() {
                   </span>
 
                   <button
-                    onClick={() => removeFromCart(item.product._id)}
+                    onClick={() =>
+                      removeFromCart(
+                        item.product._id,
+                        item.product.selectedSize
+                      )
+                    }
                     className="text-red-500 border px-2 py-1 rounded hover:bg-red-600 hover:text-white"
                   >
                     Remove
@@ -245,6 +263,27 @@ export default function CartPage() {
                       value={form.address}
                       onChange={(e) =>
                         setForm({ ...form, address: e.target.value })
+                      }
+                      className="w-full p-3 rounded bg-gray-700"
+                      required
+                    />
+                    <input
+                      type="text"
+                      placeholder="Police Station (Thana)"
+                      value={form.policeStation}
+                      onChange={(e) =>
+                        setForm({ ...form, policeStation: e.target.value })
+                      }
+                      className="w-full p-3 rounded bg-gray-700"
+                      required
+                    />
+
+                    <input
+                      type="text"
+                      placeholder="District (Zila)"
+                      value={form.district}
+                      onChange={(e) =>
+                        setForm({ ...form, district: e.target.value })
                       }
                       className="w-full p-3 rounded bg-gray-700"
                       required

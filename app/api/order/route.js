@@ -7,20 +7,27 @@ export async function POST(req) {
     await dbConnect();
     const body = await req.json();
 
-    // Build items array with sizes
+    // ✅ FIX PHONE FORMAT
+    if (body.customer?.phone) {
+      body.customer.phone = body.customer.phone
+        .toString()
+        .trim()
+        .replace(/\s|-/g, "");
+    }
+
     const itemsWithSize = body.items.map((item) => ({
       product: {
         _id: item.product._id,
         name: item.product.name,
         price: item.product.price,
       },
-      size: item.product.size || item.product.selectedSize,
+      size: item.size,
       quantity: item.quantity,
     }));
 
     const newOrder = new Order({
-      customer: body.customer, // name, phone, address
-      items: itemsWithSize, // items with size
+      customer: body.customer,
+      items: itemsWithSize,
       totalPrice: body.totalPrice,
       paymentMethod: body.paymentMethod,
     });
@@ -35,12 +42,27 @@ export async function POST(req) {
     console.error("ORDER SAVE ERROR:", error);
 
     return NextResponse.json(
-      {
-        error: error.message,
-        details: error.errors || null,
-      },
+      { error: error.message, message: error.message },
       { status: 500 }
     );
+  }
+}
+
+export async function PUT(req, { params }) {
+  try {
+    const { id } = params;
+    const updatedOrder = await req.json(); // expects full order object
+
+    const order = await Order.findByIdAndUpdate(id, updatedOrder, {
+      new: true,
+    });
+
+    if (!order) return new Response("Order not found", { status: 404 });
+
+    return new Response(JSON.stringify(order), { status: 200 });
+  } catch (err) {
+    console.error(err);
+    return new Response("Internal Server Error", { status: 500 });
   }
 }
 

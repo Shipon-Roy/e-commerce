@@ -30,12 +30,22 @@ export default function AdminDashboard() {
 
   if (!stats) return <p className="text-white">Loading...</p>;
 
+  // Calculate total revenue from delivered orders
+  const totalRevenue = stats.recentOrders
+    .filter((order) => order.status === "Delivered")
+    .reduce((sum, order) => {
+      const orderTotal = order.items.reduce((acc, item) => {
+        return acc + (item.product?.price || 0) * item.quantity;
+      }, 0);
+      return sum + orderTotal;
+    }, 0);
+
   return (
     <ProtectedRoute roles={["admin"]}>
       <div className="space-y-6 text-white">
         <h1 className="text-3xl font-bold">📊 Admin Dashboard</h1>
 
-        <div className="grid sm:grid-cols-3 gap-6">
+        <div className="grid sm:grid-cols-4 gap-6">
           <div className="bg-gray-800 p-6 rounded shadow">
             <h2 className="font-semibold">Total Products</h2>
             <p className="text-2xl">{stats.totalProducts}</p>
@@ -47,6 +57,10 @@ export default function AdminDashboard() {
           <div className="bg-gray-800 p-6 rounded shadow">
             <h2 className="font-semibold">Active Users</h2>
             <p className="text-2xl">{stats.totalUsers}</p>
+          </div>
+          <div className="bg-gray-800 p-6 rounded shadow">
+            <h2 className="font-semibold">Total Revenue</h2>
+            <p className="text-2xl">৳ {totalRevenue}</p>
           </div>
         </div>
 
@@ -67,9 +81,8 @@ export default function AdminDashboard() {
                   <strong>Address: </strong>
                   {order.customer?.address}
                 </p>
-                <p>
-                  <strong>Size:</strong> {order.items[0].size}
-                </p>
+                <p>Police Station: {order.customer?.policeStation}</p>
+                <p>District: {order.customer?.district}</p>
                 <p>
                   <strong>Status:</strong> {order.status}
                 </p>
